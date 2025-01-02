@@ -1,6 +1,6 @@
 # Generating Property Listings with Machine Learning
 
-<time datetime="2021-04-10 07:00">10th Apr 2021</time>
+<time datetime="2022-02-16 07:00">16th Feb 2022</time>
 
 After scraping a dataset of rental listings, one of my first thoughts was to use this to train a neural network to generate property descriptions. I didn't think this automation would be useful for anyone, not even the laziest of estate agents, but it felt like an achievable task. That was the plan in 2018 and, a mere four years later, I've finally gotten around to doing it.
 
@@ -45,7 +45,8 @@ I don't imagine any of the above listings will make you jump out of your chair a
 Because there is so much information baked into the T5 model, it can generalise to locations outside of the UK. Let's pick Manhattan...
 
 _translate Hashtags to English: #Manhattan #rent_1200 #professional #2_bedrooms #flat #living_room_
-This amazing apartment is on the 5th floor, so it is quite a high-rise.The room comes fully furnished with kingsize bed, double closet, table, and 4 chairs! The apartment has two bathrooms, one in each: one downstairs (with toilet), one upstairs (shower) and one of those are just for guests only!! The living area/bedroom includes huge windows looking over New York skyline from all directions...There are two bedrooms available; one large, spacious bedroom and one extra small but nice space to keep a dog.You will share the entire upper house
+
+> This amazing apartment is on the 5th floor, so it is quite a high-rise.The room comes fully furnished with kingsize bed, double closet, table, and 4 chairs! The apartment has two bathrooms, one in each: one downstairs (with toilet), one upstairs (shower) and one of those are just for guests only!! The living area/bedroom includes huge windows looking over New York skyline from all directions...There are two bedrooms available; one large, spacious bedroom and one extra small but nice space to keep a dog.You will share the entire upper house
 
 While it's obvious to us that Manhattan is in New York, it surprised me that this model was able to take this knowledge and combine it with the training we did to generate a listing. Pretty cool!
 
