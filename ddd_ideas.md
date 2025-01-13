@@ -153,7 +153,7 @@ Basic data validation is included in the **Value Object** construction. This is 
 **Value Objects** are immutable. Once one is instantiated and validated, you know it is valid, always. Because **Value Objects** are immutable, any methods are side-effect free. **Value Objects** can be passed around a multi-threaded application with confidence.
 
 ## Use rich domain models
-Don't compose your application with only weak (or anaemic) domain models. These are classes that hold data but don't include any business logic. The result is that all logic is pushed into what developers often labelled "services" (but these are different to the DDD definition of Services [provided above](#entities)).
+Don't compose your application with only weak (or anaemic) domain models. These are classes that hold data but don't include any business logic. The result is that all logic is pushed into what developers often label "services" (but these are different to the DDD definition of Services [provided above](#domain-services)).
 
 For an application with anaemic domain models, a developer might write a class like below to perform the business logic.
 ```kotlin
@@ -168,7 +168,7 @@ class BookingService {
     }
 
     fun cancelBooking(bookingId: BookingIdentifier) {
-        ..
+        // Business logic...
     }
 
 }
@@ -193,7 +193,7 @@ In the previous section I treated the `BookingDetails` as a **Value Object**. Bu
 }
 
 class Booking(
-    val bookingId: CustomerIdentifier = BookingIdentifier.new(),
+    val bookingId: BookingIdentifier = BookingIdentifier.new(),
     val customerId: CustomerIdentifier,
     val cinemaId: CinemaIdentifier,
     val filmId: FilmIdentifier,
@@ -214,11 +214,11 @@ class Booking(
 }
 ```
 
-Our booking class clearly represents a single booking, and actions associated with it. It is unlikely a future developer would bastardise this class by adding methods like `getAllBookings` or `findBooking`. Thus, we have better preserved the cohesion of our codebase going into the future. And maximising the maintainability of a codebase is critical for any long-lived application. There is no longer a "create" function, as this is simply performed through the act of instantiating the class. And the actions that can be made on this **Entity** are clearly defined by the class methods. Instead of the vague `updateBooking` class, we have `changeSeats`. The code reflects the actual use case and tells the developer why it's there.
+Our booking class clearly represents a single booking, and actions associated with it. It is unlikely a future developer would bastardise this class by adding methods like `getAllBookings` or `findBooking`. Thus, we have better preserved the cohesion of our codebase going into the future. And maximising the maintainability of a codebase is critical for any long-lived application. There is no longer a "create" function, as this is simply performed through the act of instantiating the class. And the actions that can be made on this **Entity** are clearly defined by the class methods. Instead of the vague `updateBooking` method, we have `changeSeats`. The code reflects the actual use case and tells the developer why it's there.
 
 ## Hide your domain models from the outside world
 
-All projects have dependencies for communicating with the outside world. These could help serve RESTful endpoints, communicate with other services via RPC, or connect to a database. While necessary, none of this has anything to do with the purpose of the service. So, there is no reason to couple these external dependencies to this core business logic. This principle is often referred to as [clean architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html). DDD is not the only proponent of this style. But, with its strong emphasis on considered domain models, it does scream out for such an approach.
+All projects have dependencies for communicating with the outside world. These could help serve RESTful endpoints, communicate with other services via RPC, or connect to a database. While necessary, none of this has anything to do with the purpose of the service. So, there is no reason to couple these external dependencies to any core business logic. This principle is often referred to as [clean architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html). DDD is not the only proponent of this style. But, with its strong emphasis on considered domain models, it does scream out for such an approach.
 
 Any layered architecture can achieve the separation of concerns required for clean architecture. My favourite is the Ports and Adapters (i.e. Hexagonal) style. It strongly promotes the use of clean domain models. The "ports" surround your core logic and serve as points of entry to your application. These ports are typically defined as interfaces. The concrete implementations of these interfaces are the "adapters" that leverage libraries and other dependencies to serve their function.
 
@@ -232,7 +232,7 @@ What's wrong with a simple three-layer architecture, with a presentation, applic
 Further, ORMs promote database driven design. It's easier to pretend your ORM classes are the core models of your application. But that means your "model" actually reflects how the data is organised in the database, not how it's represented in real life. And if these ORM classes are used as your core "models", then good luck ever switching frameworks down the line. The ORM dependency is now tightly coupled to all your logic. You will effectively need to re-write your entire application. I have also seen the same mistake occur for gRPC generated data access classes. Best use a clean architecture and leave these dependencies out of your core business logic 😌
 
 ## Further reading
-Am I an expert in DDD? No! But some of the insights above motivated me to apply it more, and to keep learning. If you feel the same, I've listing some additional resources below.<br/><br/>
+Am I an expert in DDD? Nope. But some of the insights above motivated me to apply it more, and to keep learning. If you feel the same, I've listing some additional resources below.<br/><br/>
 [Domain-Driven Design Reference](https://www.domainlanguage.com/wp-content/uploads/2016/05/DDD_Reference_2015-03.pdf) - Eric Evans<br/>
 [Domain-Driven Design](https://www.oreilly.com/library/view/domain-driven-design-tackling/0321125215/) - Eric Evans<br/>
 [Implementing Domain-Driven Design](https://www.oreilly.com/library/view/implementing-domain-driven-design/9780133039900/) - Vaughn Vernon<br/>
