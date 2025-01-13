@@ -3,17 +3,17 @@
 
 What is Domain-Driven Design (DDD)? I used to group it with the other programming acronyms (TDD, SOLID, KISS, YAGNI, DRY, etc.). Maybe something developers _should_ practice, but often don’t. That changed after I read Vaughn Vernon's book [**Implementing Domain Driven Design**](https://www.oreilly.com/library/view/implementing-domain-driven-design/9780133039900/).
 
-As developers, we are told what constitutes "good code". There should be high cohesion, low coupling, single responsibilities, information hiding, and so on. But these ideas are abstract. While the benefit of these characteristics are clear, it’s not always obvious how to achieve them. Well, DDD is one way how. It describes a number of patterns that will help you write clearer, less coupled, extensible, cohesive code that aligns strongly with the business' goals.
+As developers, we are told what constitutes "good code". There should be high cohesion, low coupling, single responsibilities, information hiding, and so on. But these ideas are abstract. While the benefits of these characteristics are clear, it’s not always obvious how to achieve them. Well, DDD is one way. It describes a number of patterns that will help you write clearer, less coupled, extensible, cohesive code that aligns strongly with the business' goals.
 
-A core tenet is that your code should model the domain you are building a solution for. If a business process change is conceptually simple, so is the required code change. No more explaining to a product manager why a basic feature request will actually take weeks to implement. I am relatively new to this methodology. So I won't provide a more detailed description than that. Instead, I will share some useful DDD patterns I've come across. These are good general programming practices. You don't need to "do" DDD to follow these. But if you think they are insightful, I would encourage you to checkout the resources [listed at the end](#further-reading).
+A core tenet is that your code should model the domain you are building a solution for. If a business process change is conceptually simple, so is the required code change. No more explaining to a product manager why a basic feature request will actually take weeks to implement. I am relatively new to this methodology. So I won't provide a more detailed description than that. Instead, I will share some useful DDD patterns I've come across. These are good general programming practices. You don't need to "do" DDD to follow these. But if you think they are insightful, I would encourage you to check out the resources [listed at the end](#further-reading).
 
 **Some useful DDD patterns:**<br/>
-1. [Understand what you're building, and why.](#understand-what-youre-building-and-why)
-2. [Understand your relationship with other services.](#understand-your-relationship-with-other-services)
-3. [Understand the type of object you’re creating.](#understand-the-type-of-object-youre-creating)
-4. [Use immutable Value Objects.](#use-immutable-value-objects)
-5. [Use rich domain models.](#use-rich-domain-models)
-6. [Hide your domain models from the outside world.](#hide-your-domain-models-from-the-outside-world)
+1. [Understand what you're building, and why.](#understand-what-youre-building-and-why)<br/>
+2. [Understand your relationship with other services.](#understand-your-relationship-with-other-services)<br/>
+3. [Understand the type of object you’re creating.](#understand-the-type-of-object-youre-creating)<br/>
+4. [Use immutable Value Objects.](#use-immutable-value-objects)<br/>
+5. [Use rich domain models.](#use-rich-domain-models)<br/>
+6. [Hide your domain models from the outside world.](#hide-your-domain-models-from-the-outside-world)<br/>
 
 ## Understand what you’re building, and why
 
@@ -30,13 +30,13 @@ Imagine an application for booking tickets at a cinema. What's a good name for a
 
 Before designing a service, take a moment to understand how it fits into your wider technology ecosystem. Some services exist to support unrelated parts of the business. And there are services that your new service will need to interact with. Understanding this space is called **Context Mapping**. You might incidentally do this when designing a new system. However, for DDD it is an _explicit_ process. It goes so far as to characterise the relationships underpinning these services. Below are a few examples. Check out more at [this useful repository](https://github.com/ddd-crew/context-mapping).
 
-**Partnership**<br/>
+#### Partnership
 The upstream and downstream teams succeed or fail together. Models and interfaces are developed to suit both their needs and any features and planned between them to minimise harm.
 
-**Customer-Supplier Development**<br/>
+#### Customer-Supplier Development
 The success of the upstream team (the supplier) is independent of the downstream team. But they take the downstream's needs into account when planning.
 
-**Conformist**<br/>
+#### Conformist
 The upstream team does not accommodate the downstream team’s needs. The downstream team conforms to the models of the upstream team, whatever they are or change to.
 
 A lot of confusion and frustration might be avoided if these relationships are agreed between participating teams ahead of time.
@@ -45,29 +45,27 @@ A lot of confusion and frustration might be avoided if these relationships are a
 
 In object-oriented programming (OOP), our codebases are full of classes. These are often loosely categorised into vague concepts like services and repositories. However, these categories and their definitions vary from one project (or developer) to the next. So in each new codebase, we spend time understanding the responsibilities of each class.
 
-Without formal definitions, it is easy for the scope of these classes to grow. And then the level of abstraction becomes lost. Fortunately, DDD provides concrete definitions for model categories, and rules for how they can interact. The vocabulary is simple, yet empowering. When you don’t have to define the building blocks of your application, you can focus more on what you’re building
+Without formal definitions, it is easy for the scope of these classes to grow. And then the level of abstraction becomes lost. Fortunately, DDD provides concrete definitions for model categories, and rules for how they can interact. The vocabulary is simple, yet empowering. When you don’t have to define the building blocks of your application, you can focus more on what you’re building. These are the “tactical patterns” of DDD. Some examples are:
 
-These are the “tactical patterns” of DDD. Some examples are:
-
-**Value Objects**<br/>
+#### Value Objects
 Immutable objects that represent a value with no identity. These can be replaced, but cannot change, over time. Two **Value Objects** are considered equal if they hold the same values (i.e. structural equality).
 
-**Entities**<br/>
+#### Entities
 Objects that have a unique identity. Two **Entities** with the same identifier are considered equal, even if all other properties are different in value. These represent concepts in your domain that you need to observe and track changes to over time.
 
-**Aggregates**<br/>
+#### Aggregates
 These are a grouping of **Entities** and **Value Objects** that represent a consistency boundary. If there is some invariant or business rule that must be maintained when updating a group of objects (and rolled back everywhere upon failure), then they belong together in an **Aggregate**. One **Entity** will serve as the **Aggregate Root**, through which all behaviour is orchestrated.
 
 What if another **Entity** is changed at the same time as the **Aggregate**? If there is no requirement to maintain consistency between the two objects (and _really_ challenge yourself on this point!) then it shouldn't be part of the **Aggregate**. Instead, it can be updated through an event-driven process that is eventually consistent. The goal is to make each **Aggregate** as lightweight as possible.
 
-**Domain services**<br/>
+#### Domain Services
 A **Domain Service** helps realise business logic and coordinates actions between your domain models (i.e. **Aggregates**). Importantly, only use **Domain Services** when the behaviour being orchestrated cannot logically belong to a single **Aggregate** (see [below](#use-rich-domain-models)).
 
-**Application services**<br/>
-These allow your domain logic to interface with the external world (API, persistence stores, etc). No business logic belongs here. Each method represents a single business use case. And each method achieves its goal by interacting with the domain models and domain services.
+#### Application Services
+These allow your domain logic to interface with the external world (API, persistence stores, etc). No business logic belongs here. Each method represents a single business use case. And each method achieves its goal by interacting with the **Aggregates** and **Domain Services**.
 
 ## Use immutable Value Objects
-Try using **Value Objects** where ever possible. Replacing both primitives and classes with **Value Objects** will make your code more self-documenting, easier to maintain, and less prone to bugs.
+Try using **Value Objects** wherever possible. Replacing both primitives and classes with **Value Objects** will make your code more self-documenting, easier to maintain, and less prone to bugs.
 
 Let us consider a Kotlin application for booking tickets at a cinema. Perhaps it was first written like below.
 
@@ -76,9 +74,9 @@ class TicketDetail(
     var ticketType: TicketType,
     var filmId: UUID,
     var sessionTime: LocalDateTime,
-    var seatTheatre: Integer,
+    var seatTheatre: Int,
     var seatRow: Char,
-    var seatNumber: Integer,
+    var seatNumber: Int,
     var price: BigDecimal,
     var discount: BigDecimal,
 )
@@ -100,9 +98,9 @@ data class CinemaIdentifier(val value: UUID)
 data class FilmIdentifier(val value: UUID)
 
 data class Seat(
-    val theatre: Integer,
+    val theatre: Int,
     val row: Char,
-    val number: Integer,
+    val number: Int,
 )
 
 data class TicketPrice(
@@ -143,10 +141,10 @@ These changes introduce a number of benefits.
 Each type actually means something in our domain. They are not primitives. Also, related concepts can be grouped together. For example, all aspects of the seating location (theatre, row, seat number) are grouped into the `Seat` class. This improves readability and reduces the number of method parameters.
 
 **Better type safety**<br/>
-Now it’s harder to accidentally swap the order of the method parameters that previously had the same type (i.e. `UUID`). For static languages, the compiler will complain if the value for `customerId` and `cinemeaId` are swapped. For dynamic programming languages, such errors can now be caught by the linter (if you use one).
+Now it’s harder to accidentally swap the order of the method parameters that previously had the same type (i.e. `UUID`). For static languages, the compiler will complain if the values for `customerId` and `cinemeaId` are swapped. For dynamic programming languages, such errors can now be caught by the linter (if you use one).
 
 **Improved evolvability.**<br/>
-What if we want to change the data type representing an identifier (e.g. change the cinema identifier to `Integer` )? Previously, we would need to update _all_ class and function definitions using that identifier. Now we only need to update a few lines in the `CinemaIdentifier` class.
+What if we want to change the data type representing an identifier (e.g. change the cinema identifier to `Int` )? Previously, we would need to update _all_ class and function definitions using that identifier. Now we only need to update a few lines in the `CinemaIdentifier` class.
 
 **Validation**<br/>
 Basic data validation is included in the **Value Object** construction. This is much better than scattering around (and possibly repeating) validation in the methods the data is used. It improves reliability, because the data is _guaranteed_ to be validated. And it improves readability, as the business logic can now focus on the use case.
@@ -155,7 +153,7 @@ Basic data validation is included in the **Value Object** construction. This is 
 **Value Objects** are immutable. Once one is instantiated and validated, you know it is valid, always. Because **Value Objects** are immutable, any methods are side-effect free. **Value Objects** can be passed around a multi-threaded application with confidence.
 
 ## Use rich domain models
-Don't compose your application with only weak (or anaemic) domain models. These are classes that hold data but don't include any business logic. The result is that all logic is pushed into what developers often labelled "services" (but these are different to the DDD definition of Services [provided above](#understand-the-type-of-object-youre-creating)).
+Don't compose your application with only weak (or anaemic) domain models. These are classes that hold data but don't include any business logic. The result is that all logic is pushed into what developers often labelled "services" (but these are different to the DDD definition of Services [provided above](#entities)).
 
 For an application with anaemic domain models, a developer might write a class like below to perform the business logic.
 ```kotlin
@@ -165,7 +163,7 @@ class BookingService {
         // Business logic...
     }
 
-    fun updateBooking(bookingId, BookingIdentifier, updatedDetails: BookingDetails) {
+    fun updateBooking(bookingId: BookingIdentifier, updatedDetails: BookingDetails) {
         // Business logic...
     }
 
@@ -216,7 +214,7 @@ class Booking(
 }
 ```
 
-Our booking class clearly represents a single booking, and actions associated with it. It is unlikely a future developer would bastardise this class by adding methods like `getAllBookings` or `findBooking`. Thus, we have better preserved the cohesion of our codebase going into the future. And maximising the maintainability of a codebase is critical for any long-lived application. There is no longer a "create" function, as this is simply performed through the act of instantiating the class. And the actions that can be made on this ***Entity* are clearly defined by the class methods. Instead of the vague `updateBooking` class, we have `changeSeats`. The code reflects the actual use case and tells the developer why it's there.
+Our booking class clearly represents a single booking, and actions associated with it. It is unlikely a future developer would bastardise this class by adding methods like `getAllBookings` or `findBooking`. Thus, we have better preserved the cohesion of our codebase going into the future. And maximising the maintainability of a codebase is critical for any long-lived application. There is no longer a "create" function, as this is simply performed through the act of instantiating the class. And the actions that can be made on this **Entity** are clearly defined by the class methods. Instead of the vague `updateBooking` class, we have `changeSeats`. The code reflects the actual use case and tells the developer why it's there.
 
 ## Hide your domain models from the outside world
 
@@ -226,7 +224,7 @@ Any layered architecture can achieve the separation of concerns required for cle
 
 <figure>
 ![](images/ddd_clean_architecture.png)
-<figcaption>An illustration of the Ports and Adapters architecture. Inbound and outbound ports don't only interface with APIs and databases. This is only an example.</figcaption>
+<figcaption>An illustration of the Ports and Adapters architecture, where arrows point in the direction of dependency. If needed, we can easily change our datastore from PostgreSQL to MongoDB. Inbound and outbound ports don't only interface with APIs and databases. This is only an example.</figcaption>
 </figure>
 
 What's wrong with a simple three-layer architecture, with a presentation, application, and data-access layer? If done well, nothing. But, particularly if combined with an object-relational mapping (ORM) framework, it can enable developers to take shortcuts. These reduce the maintainability of the project over its life. For example, with the ORM classes it is possible for the presentation layer to directly interact with the database. And a lazy developer might choose to do this for a simple CRUD operation, instead of passing data unnecessarily through the application layer. Over time, such a shortcut might occur for another reason. And then again, and again. The result is logic spread over all the layers of your application, defeating the original purpose of the layered architecture.
@@ -234,7 +232,7 @@ What's wrong with a simple three-layer architecture, with a presentation, applic
 Further, ORMs promote database driven design. It's easier to pretend your ORM classes are the core models of your application. But that means your "model" actually reflects how the data is organised in the database, not how it's represented in real life. And if these ORM classes are used as your core "models", then good luck ever switching frameworks down the line. The ORM dependency is now tightly coupled to all your logic. You will effectively need to re-write your entire application. I have also seen the same mistake occur for gRPC generated data access classes. Best use a clean architecture and leave these dependencies out of your core business logic 😌
 
 ## Further reading
-Am I an expert in DDD? No! But some of the insights above motivated me to apply it more, and to keep learning. If you feel the same, I've listing some additional resources below.
+Am I an expert in DDD? No! But some of the insights above motivated me to apply it more, and to keep learning. If you feel the same, I've listing some additional resources below.<br/><br/>
 [Domain-Driven Design Reference](https://www.domainlanguage.com/wp-content/uploads/2016/05/DDD_Reference_2015-03.pdf) - Eric Evans<br/>
 [Domain-Driven Design](https://www.oreilly.com/library/view/domain-driven-design-tackling/0321125215/) - Eric Evans<br/>
 [Implementing Domain-Driven Design](https://www.oreilly.com/library/view/implementing-domain-driven-design/9780133039900/) - Vaughn Vernon<br/>
