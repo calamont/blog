@@ -56,10 +56,10 @@ Objects that have a unique identity. Two **Entities** with the same identifier a
 #### Aggregates
 These are a grouping of **Entities** and **Value Objects** that represent a consistency boundary. If there is some invariant or business rule that must be maintained when updating a group of objects (and rolled back everywhere upon failure), then they belong together in an **Aggregate**. One **Entity** will serve as the **Aggregate Root**, through which all behaviour is orchestrated.
 
-What if another **Entity** is changed at the same time as the **Aggregate**? If there is no requirement to maintain consistency between the two objects (and _really_ challenge yourself on this point!) then it shouldn't be part of the **Aggregate**. Instead, it can be updated through an event-driven process that is eventually consistent. The goal is to make each **Aggregate** as lightweight as possible.
+What if a process updates an existing **Aggregate** and another **Entity** at the same time? If there is no requirement to maintain consistency between the two objects (and _really_ challenge yourself on this point!) then they don't need to be combined to form a larger **Aggregate**. Instead, this other **Entity** can be updated through an event-driven process that is eventually consistent. The goal is to make each **Aggregate** as lightweight as possible.
 
 #### Domain Services
-A **Domain Service** helps realise business logic and coordinates actions between your domain models (i.e. **Aggregates**). Importantly, only use **Domain Services** when the behaviour being orchestrated cannot logically belong to a single **Aggregate** (see [below](#use-rich-domain-models)).
+A **Domain Service** helps realise business logic and coordinates actions between your domain models. Importantly, only use **Domain Services** when the behaviour being orchestrated cannot logically belong to a single **Aggregate** (see [below](#use-rich-domain-models)).
 
 #### Application Services
 These allow your domain logic to interface with the external world (API, persistence stores, etc). No business logic belongs here. Each method represents a single business use case. And each method achieves its goal by interacting with the **Aggregates** and **Domain Services**.
@@ -141,19 +141,19 @@ These changes introduce a number of benefits.
 Each type actually means something in our domain. They are not primitives. Also, related concepts can be grouped together. For example, all aspects of the seating location (theatre, row, seat number) are grouped into the `Seat` class. This improves readability and reduces the number of method parameters.
 
 **Better type safety**<br/>
-Now it’s harder to accidentally swap the order of the method parameters that previously had the same type (i.e. `UUID`). For static languages, the compiler will complain if the values for `customerId` and `cinemeaId` are swapped. For dynamic programming languages, such errors can now be caught by the linter (if you use one).
+Now it’s harder to accidentally swap the order of the method parameters that previously had the same type (i.e. `UUID`). For static programming languages, the compiler will complain if the values for `customerId` and `cinemaId` are swapped. For dynamic programming languages, such errors can now be caught by the linter (if you use one).
 
 **Improved evolvability.**<br/>
-What if we want to change the data type representing an identifier (e.g. change the cinema identifier to `Int` )? Previously, we would need to update _all_ class and function definitions using that identifier. Now we only need to update a few lines in the `CinemaIdentifier` class.
+What if we want to change the data type representing an identifier (e.g. change the cinema identifier to `Int`)? Previously, we would need to update _all_ class and function definitions using that identifier. Now we only need to update a few lines in the `CinemaIdentifier` class.
 
 **Validation**<br/>
-Basic data validation is included in the **Value Object** construction. This is much better than scattering around (and possibly repeating) validation in the methods the data is used. It improves reliability, because the data is _guaranteed_ to be validated. And it improves readability, as the business logic can now focus on the use case.
+Basic data validation is included in the **Value Object** construction. This is much better than scattering around (and possibly repeating) validation in the methods the data is used. It improves reliability, because the data is _guaranteed_ to be valid. And it improves readability, as the business logic can now focus on the use case.
 
 **Immutability**<br/>
 **Value Objects** are immutable. Once one is instantiated and validated, you know it is valid, always. Because **Value Objects** are immutable, any methods are side-effect free. **Value Objects** can be passed around a multi-threaded application with confidence.
 
 ## Use rich domain models
-Don't compose your application with only weak (or anaemic) domain models. These are classes that hold data but don't include any business logic. The result is that all logic is pushed into what developers often label "services" (but these are different to the DDD definition of Services [provided above](#domain-services)).
+Don't compose your application with only weak (or anaemic) domain models. These are classes that hold data but don't include any business logic. The result is that all logic is pushed into what developers often label "services" (but these are different to the DDD definition of services [provided above](#domain-services)).
 
 For an application with anaemic domain models, a developer might write a class like below to perform the business logic.
 ```kotlin
