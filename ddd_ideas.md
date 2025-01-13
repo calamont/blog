@@ -114,8 +114,7 @@ data class TicketPrice(
     val ticketType: TicketType,
     val seat: Seat,
     val price: TicketPrice,
-) {
-}
+)
 
 data class BookingDetails(
     val customerId: CustomerIdentifier,
@@ -202,7 +201,7 @@ class Booking(
 ) {
 
     fun changeSeats(newSeats: List<Seat>) {
-        ticketDetails = ticketDetails.zip(newSeats).forEach {ticket, seat ->
+        ticketDetails = ticketDetails.zip(newSeats).map { (ticket, seat) ->
             ticket.withNewSeat(seat)
         }
     }
